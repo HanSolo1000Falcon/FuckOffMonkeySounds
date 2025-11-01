@@ -1,37 +1,25 @@
-﻿using HarmonyLib;
-#if MELONLOADER
-using MelonLoader;
-using FuckOffMonkeySounds;
-#else
+﻿using System.Reflection;
 using BepInEx;
-using System.Reflection;
-#endif
+using HarmonyLib;
 
-#if MELONLOADER
-[assembly: MelonInfo(typeof(FOMSMod), "FuckOffMonkeySounds", "1.1.0", "Luna")]
-[assembly: MelonGame("Another Axiom", "Gorilla Tag")]
-#endif
+// soz for removing melon loader support, just dont know how to do it
+// sincerely, hansolo1000falcon
+
 namespace FuckOffMonkeySounds
 {
-#if MELONLOADER
-    public class FOMSMod : MelonMod { }
-#else
     [BepInPlugin("luna.fuckoffmonkeysounds", "FuckOffMonkeySounds", "1.1.0")]
-    public class FOMSMod : BaseUnityPlugin {
-        
-        void Start()
+    public class FOMSMod : BaseUnityPlugin
+    {
+        private void Start()
         {
-            HarmonyLib.Harmony harmony = new HarmonyLib.Harmony("luna.fuckoffmonkeysounds");
+            Harmony harmony = new Harmony("luna.fuckoffmonkeysounds");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
-#endif
-    [HarmonyPatch(typeof(VRRig), "LateUpdate")]
-    static class RigPatch
+
+    [HarmonyPatch(typeof(VRRig), "PostTick")]
+    internal static class RigPatch
     {
-        static void Prefix(VRRig __instance)
-        {
-            __instance.replacementVoiceLoudnessThreshold = float.MaxValue;
-        }
+        private static void Prefix(VRRig __instance) => __instance.replacementVoiceLoudnessThreshold = float.MaxValue;
     }
 }
